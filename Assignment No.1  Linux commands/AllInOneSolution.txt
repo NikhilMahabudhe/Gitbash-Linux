@@ -1,0 +1,195 @@
+prob 1) Get User from /etc/passwd and change oqnership of user's home 
+filename : prob1_1.sh
+content  :
+#! /bin/bash
+paths=`cat /etc/passwd | awk -F: '{if($4 > 1000) print $7}'`
+linecount=`echo "$paths" | wc -l`
+for path in $paths
+do
+dircontent=`ls -l $path`
+sudo chown $USER:$USER $path
+echo -e "$path : $dircontent"
+done
+-----------------------------------------------------------------------------------------------------------------------------
+prob 2) Move Files From one folder to the respective folders.
+filename : prob1_2.sh
+content  :
+#! /bin/bash
+for file in `ls *.txt`;
+do
+	foldername=`echo $file | awk -F. '{print $1}'`;
+	if [ -d $foldername ]
+	then
+		rm -r $foldername;
+	fi
+	mkdir $foldername;
+	cp $file $foldername;
+	echo "files created";
+done
+-----------------------------------------------------------------------------------------------------------------------------
+prob 3) Append current data to all log files name which has extension .log.1 from a folder
+filename : prob1_3.sh
+content  :
+#! /bin/bash
+#touch abc.log.1 def.log.1 ghi.log.1 jkl.log.1 mno.log.1
+dte=`date +'%d%m%Y'`
+for file in `ls *log*1`
+do
+	ftoken=`echo $file | awk -F. '{print $1}'` #abc|def|ghi|jkl
+	stoken=`echo $file | awk -F. '{print $2}'` #log
+	ttoken=`echo $file | awk -F. '{print $3}'` #1
+	newName=`echo "$ftoken.$dte.$stoken.$ttoken"` #abc.22042020.log.1
+	#echo $newName
+	mv $file $newName
+done
+-----------------------------------------------------------------------------------------------------------------------------
+prob 4) Archive the files from /var/log folder which have modified 7 days ago and move it to your backup folder
+filename : prob1_4.sh
+content  :
+#! /bin/bash
+destination="/home/varad/Desktop/TerminalCommands/linux-content/stage1/olderbkup"
+for file in `find /var/log -type f -mtime +7`
+do
+	cp $file $destination
+done
+-----------------------------------------------------------------------------------------------------------------------------
+prob 5) Chcek if a folder exists or not. iF it's not present, create it.
+filename : prob1_5.sh
+content  :
+#! /bin/bash
+
+if [ -d "myFolder" ]
+then
+	echo "folder already exists!!"
+else
+	mkdir myFolder
+	echo "$foldername created"
+fi 
+-----------------------------------------------------------------------------------------------------------------------------
+prob 6) Execute command "hello" and "ls" and check its execution status and print whether command executed successfully or not.
+filename : prob1_6.sh
+content  :
+#! /bin/bash
+abc=`hello`
+if [ $? == 0 ]
+then
+	echo "command executed successfully!!"
+else
+	echo -e "hello"
+	echo "command failed to execute"
+fi
+
+xyz=`ls`
+if [ $? == 0 ]
+then
+	echo -e "ls"
+        echo "command executed successfully!!"
+else
+        echo "command failed to execute"
+fi
+-----------------------------------------------------------------------------------------------------------------------------
+prob 7) Set Environment usersecret="dH34xJaa23" if its already not set
+filename : prob1_7.sh
+content  :
+#! /bin/bash
+len=`echo $usersecret`
+lenu=`echo ${#len}`
+if [ ${#len}==0 ]
+then
+	value="dH34xJaa23"
+	export usersecret=$value
+	echo "all set"
+else
+	echo "error : env already set"
+fi
+-----------------------------------------------------------------------------------------------------------------------------
+prob 8) Find a word "systemd" from all log files in the folder /var/log and print number of occurence more than 0 against each file.
+filename : prob1_8.sh
+content  :
+#! /bin/bash
+for log in `ls /var/log/*.log`
+do
+	count=`grep -c 'systemd' $log`
+	if [ $count -gt 0 ]
+	then
+		echo $count
+	fi
+done
+-----------------------------------------------------------------------------------------------------------------------------
+prob 9) Create processlist table displays process id, parent process id, command name,% of memory consumption,% of cpu utilization
+filename : prob1_9.sh
+content  :
+#! /bin/bash
+ps -o pid,ppid,cmd,%mem,pcpu
+-----------------------------------------------------------------------------------------------------------------------------
+
+prob 10) Print last 4 frequently access urls count in sorted order from /var/log/httpd/access.log
+filename : prob2_1.sh
+content  :
+# /bin/bash
+
+cat access.log | awk '{print $11}' | grep -v '"-"' | sort | uniq -c | sort -nr | head -4
+-----------------------------------------------------------------------------------------------------------------------------
+prob 11) Print list of last 4 frequently access unique urls at partucular hours from /var/log/httpd/access.log
+filename : prob2_2.sh
+content  :
+#! /bin/bash
+echo -e |cat access.log | awk '{print $4"["$11}' | sort | uniq -c | sort -r |head -4 | awk -F[ '{print $1  $2"--"$3}'
+-----------------------------------------------------------------------------------------------------------------------------
+prob 12) Print list of web response code count in the unique sorted at specific hours
+filename : prob2_3.sh
+content  :
+# /bin/bash
+echo -e |cat access.log | awk '{print $9}' | sort | uniq -c | sort -nr |head -4
+-----------------------------------------------------------------------------------------------------------------------------
+prob 13) Print list of 10 unique sorted client IP /var/log/httpd/access.log
+filename : prob2_4.sh
+content  :
+# /bin/bash
+
+cat access.log | awk '{if (NR!=1) {print substr($16, 2, length($16)-2)}}' | sort -nr | head -10
+-----------------------------------------------------------------------------------------------------------------------------
+prob 14) Data analysis / manipulation (Awk)
+filename : prob2_5.sh
+content  :
+#! /bin/bash
+# i) print EmployeeName and TotalPay who has BasePAy grater than 10000
+cat data.csv | awk '{if($4>10000) print $2" : "$4}'
+echo "------------------------------"
+# ii) What is the aggregate otalPay of employees whoose jobtitle is CAPTAIN
+cat data.csv | awk '{if($3=="CAPTAIN")sum += $7}END{print "Aggregat Pay : "sum}'
+echo "------------------------------"
+# iii) Print JobTitle and OverTimepay who has Ovevrtime is between 7000 and 10000
+cat data.csv | awk '{if($5>7000 && $5<10000) print $3" "$5}'
+echo "------------------------------"
+# iv) Print average BasePay
+cat data.csv | awk '{sum += $4; cnt +=1}END {print sum/cnt}'
+-----------------------------------------------------------------------------------------------------------------------------
+prob 15) Find the difference between original file and the updated file. Apply changes to the original file.
+filename : prob2_6.sh
+content  :
+#! /bin/bash
+diff=`diff -iEZ ~/Desktop/TerminalCommands/linux-content/stage1/original/original-file.sh ~/Desktop/TerminalCommands/linux-content/stage1/updated/updated-file.sh`
+echo ${#diff}
+if [ ${#diff} -gt 0 ]
+then
+	echo "There is Difference in Files"
+	cp ~/Desktop/TerminalCommands/linux-content/stage1/original/original-file.sh ~/Desktop/TerminalCommands/linux-content/stage1/updated/updated-file.sh
+	echo "applied changes to UpdatdeFolder"
+else
+	echo "No difference!! "
+fi
+if [ -d 'original-backup' ]
+then
+	cp ~/Desktop/TerminalCommands/linux-content/stage1/original/original-file.sh ~/Desktop/TerminalCommands/linux-content/stage1/original-backup
+else
+	mkdir original-backup
+	cp ~/Desktop/TerminalCommands/linux-content/stage1/original/original-file.sh ~/Desktop/TerminalCommands/linux-content/stage1/original-backup
+fi
+diff2=`diff -iEZ ~/Desktop/TerminalCommands/linux-content/stage1/original-backup/original-file.sh ~/Desktop/TerminalCommands/linux-content/stage1/updated/updated-file.sh`
+if [ ${#diff2} == 0 ]
+then
+	echo "Changes Applied Successfully.... Backup Created!"
+else
+	echo "differ in updated - backup"
+fi
