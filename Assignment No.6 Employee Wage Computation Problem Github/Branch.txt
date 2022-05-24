@@ -1,0 +1,6 @@
+9UC1EmployeeAttendance
+9UC2DailyEmployeeWage
+9UC3ParttimeEmployee
+9UC4CaseStatement
+9UC5CWagesforMonth
+9UC6HoursorDaysforMonth
